@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import asyncio
 from core.scraper import scrape_data
+from core.utils.sessionOps import save_to_session_state
 
 def render_scraper_form():
     st.header("1. Scrape Data from Website")
@@ -44,6 +45,7 @@ def render_scraper_form():
                 df = pd.DataFrame(data)
                 st.success("Scraping complete!")
                 st.write("### Scraped Data Preview", df.head())
+                save_to_session_state('data', df)
                 csv = df.to_csv(index=False).encode('utf-8')
                 st.download_button("Download CSV", csv, "scraped_data.csv", "text/csv")
             else:
