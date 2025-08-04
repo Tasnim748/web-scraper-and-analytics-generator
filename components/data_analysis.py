@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from core.analysis import basic_analysis
+from core.clean_data import convert_data_types, remove_null_values
 
 def render_data_analysis():
     st.header("2. Upload and Analyze Data")
@@ -28,6 +29,41 @@ def render_data_analysis():
 
     # Display data preview and analysis options
     st.write("### Data Preview", df.head())
+
+    st.write("### Clean Data")
+
+    # Convert Data Types
+    st.write("#### Convert Data Types")
+    column_types = st.text_area(
+        "Specify column types (JSON format)", 
+        value='{\n  "price": "numeric",\n  "date": "date"\n}'
+    )
+    if st.button("Convert Data Types"):
+        try:
+            column_types_dict = eval(column_types)  # Convert JSON-like string to dictionary
+            df = convert_data_types(df, column_types=column_types_dict)
+            st.session_state['data'] = df  # Save cleaned data to session state
+            st.success("Data types converted successfully!")
+        except Exception as e:
+            st.error(f"Error converting data types: {e}")
+
+    # Remove Null Values
+    st.write("#### Remove Null Values")
+    null_values = st.text_area(
+        "Specify null values to remove (comma-separated)", 
+        value='"" , None'
+    )
+    if st.button("Remove Null Values"):
+        try:
+            null_values_list = [val.strip() for val in null_values.split(",")]
+            df = remove_null_values(df, null_values=null_values_list)
+            st.session_state['data'] = df  # Save cleaned data to session state
+            st.success("Null values removed successfully!")
+        except Exception as e:
+            st.error(f"Error removing null values: {e}")
+
+    # Display cleaned data preview
+    st.write("### Cleaned Data Preview", df.head())
 
     st.write("### Data Analysis")
     numeric_fields = st.multiselect("Select numeric fields for analysis", 
