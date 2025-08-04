@@ -72,4 +72,9 @@ def render_data_analysis():
                                 [col for col in df.columns if pd.api.types.is_string_dtype(df[col])])
     
     if st.button("Run Analysis"):
-        basic_analysis(df, numeric_fields=numeric_fields, text_fields=text_fields)
+        analysisResult = basic_analysis(df, numeric_fields=numeric_fields, text_fields=text_fields)
+        
+        for item in analysisResult['numeric']:
+            st.success(item)
+        for item in analysisResult['text']:
+            st.info(item)
